@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Rock Gym Iași",
+    "slug": "RockGymIasi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/logoapp.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "web": {
+      "favicon": "./assets/logoapp.png"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "buildNumber": "1.0.0",
+      "config": {
+        "googleMapsApiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
+      }
+    },
+    "android": {
+      "version": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
+        }
+      },
+      "package": "com.rockgym.rockgym"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "396cfc5a-9105-4959-a4c3-5e0d41178e72"
+      }
+    }
+  }
+}
