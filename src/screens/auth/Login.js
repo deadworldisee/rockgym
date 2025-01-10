@@ -197,7 +197,7 @@ export default function ({ navigation }) {
           </View>
           <ModalAlert type={typeError} msg={errorMsg}></ModalAlert>
 
-          <Section style={{opacity: 0.75,margin:10, shadowColor: "#fff",
+          <Section style={{opacity: 0.90,margin:10, shadowColor: "#fff",
       shadowOffset: {
         width: 0,
         height: 2
@@ -338,7 +338,7 @@ export default function ({ navigation }) {
           </View>
 </SectionContent>
 </Section>
-<Section style={{opacity: 0.75,margin:10,marginTop:0, shadowColor: "#fff",
+<Section style={{opacity: 0.90,margin:10,marginTop:0, shadowColor: "#fff",
       shadowOffset: {
         width: 0,
         height: 2
@@ -349,11 +349,10 @@ export default function ({ navigation }) {
           <SectionContent style={{  backgroundColor: '#000'}}>
           <View style={styles.container}>
               <Text style={{padding:10}}>
-                {`Adresa: str. Otilia Cazimir, nr. 10, Iasi,
-              Camin Studis, 0745 553 141
+                {`Adresa: str. Otilia Cazimir, nr. 10, Iasi, 0773 960 342
                `}
                 </Text>
-                  <Image  style={{ ...styles.map, width: "100%" }} source={{uri: getMapPreview()}}/>
+                  <Image  style={{ ...styles.map, width: "100%" }} source={getMapPreview()}/>
                 </View>
                 </SectionContent>
                 </Section>

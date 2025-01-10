@@ -48,4 +48,7 @@
     Language['ro'][43]='Buton dezactivat!';
     Language['ro'][44]='Acest buton a fost dezactivat pentru 10 min!';
     Language['ro'][45]='Vizualizare Interior';
+    Language['ro'][46]='Abonamentul expiră pe ';
+    Language['ro'][47]='Șterge contul';
+    Language['ro'][48]='Sunteți sigur ca vreți să vă ștergeți contul de pe RockGym.ro inclusiv orice abonament aveți?';
 export default Language;

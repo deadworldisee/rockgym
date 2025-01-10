@@ -31,17 +31,16 @@ export default function ({ navigation }) {
                 }}
                 source={require("../../assets/logoapp.png")}
               />
-<Section style={{ opacity: 0.75,margin:10 }}>
+<Section style={{ opacity: 0.95,margin:10 }}>
             <SectionContent style={{ backgroundColor: "#000" }}>
               <View style={{ alignItems: "center" }}>
                 <Text style={{ padding: 10 }}>
-                  {`Adresa: str. Otilia Cazimir, nr. 10, Iasi,
-              Camin Studis, 0745 553 141
+                  {`Adresa: str. Otilia Cazimir, nr. 10, Iasi, 0773 960 342
                `}
                 </Text>
                 <Image
                   style={{ ...styles.map, width: "100%" }}
-                  source={{ uri: getMapPreview() }}
+                  source={ getMapPreview() }
                 />
               </View>
             </SectionContent>

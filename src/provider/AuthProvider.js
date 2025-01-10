@@ -3,13 +3,14 @@ import React, { createContext, useState, useEffect,useContext } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const getData = async key => {
+const getData =  key => {
   try {
-    const data = await AsyncStorage.getItem(key);
+    const data =  AsyncStorage.getItem(key);
     if (data !== null ) {
       
       return data;
     }
+    else return {};
   } catch (error) {
     
     console.log(error);

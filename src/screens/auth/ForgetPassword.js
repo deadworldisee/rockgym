@@ -107,7 +107,7 @@ export default function ({ navigation }) {
             />
           </View>
           <ModalAlert type={typeError} msg={errorMsg}></ModalAlert>
-          <Section style={{opacity: 0.75, margin:10, shadowColor: "#fff",
+          <Section style={{opacity: 0.90, margin:10, shadowColor: "#fff",
       shadowOffset: {
         width: 0,
         height: 2

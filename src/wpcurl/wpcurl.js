@@ -30,7 +30,7 @@ import axios from "axios";
                 )
                     .then(function (response) {
                         
-                       //console.log(response.data);
+                      // console.log(response.data);
                       // console.log(response.data.data.params);
                     
                         let  mess={'empty': false};   
@@ -114,6 +114,7 @@ import axios from "axios";
                 break;
                 case 'requestPass':
                     return new Promise((resolve, reject) => {
+                       
                         axios.post('http://rockgym.ro/auth/authentificator.php', {
                             
                         requestPass: email,
@@ -121,6 +122,8 @@ import axios from "axios";
                         },
                          {headers:{"Content-Type" : "application/json"}}
                         ) .then(function (response) {
+
+                           
                             resolve ( response);
 
                         }).catch(function (error) {
@@ -174,7 +177,31 @@ import axios from "axios";
                        
                        
                         })
-               break; 
+               break;
+               case 'delete':
+                return new Promise((resolve, reject) => {
+                    axios.post('http://rockgym.ro/auth/authentificator.php', {
+                        
+                        deleteaccount: true,
+                        id:email,
+                        
+                       
+                    },
+                     {headers:{"Content-Type" : "application/json"}}
+                    ) .then(function (response) {
+
+                        
+                        resolve ( response);
+
+                    }).catch(function (error) {
+
+
+                        reject(error);
+                    });
+               
+               
+                })
+                break; 
 
         }
 
@@ -191,12 +218,12 @@ export function getAbo(iduser)
 
                             
         axios.post('http://rockgym.ro/auth/authentificator.php', {
-            requestAbo: iduser ,           
+            requestAbo: iduser ,          
         },
          {headers:{"Content-Type" : "application/json"}}
         ) .then(function (response) {
            
-               
+            
             resolve ( response.data);
 
         }) .catch(function (error) {

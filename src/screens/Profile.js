@@ -3,13 +3,18 @@ import { View, Image, ScrollView ,ImageBackground,StyleSheet,SafeAreaView} from 
 import Language from "./utils/Language";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { getPoza } from "../wpcurl/wpcurl";
+import ModalAlert from "../components/utils/ModalAlert";
+import { getPoza,senddata } from "../wpcurl/wpcurl";
+
+import { useAuth } from "../provider/AuthProvider";
 import {
   Layout,
   Text,
   Section,
   SectionContent,
   Avatar,
+  Button,
+  useTheme,
 } from "react-native-rapi-ui";
 
 
@@ -18,9 +23,17 @@ export default function ({ navigation }) {
   const [allData, setAllData] = useState({});
   const [avatar, setAvatar] = useState();
   const [poza,setPoza]=useState();
-  const getData = async (key) => {
+  const [errorMsg, setErrorMsg] = useState("");
+  const [typeError, setTypeError] = useState("");
+  const auth = useAuth();
+
+
+
+
+
+  const getData =  key => {
     try {
-      const data = await AsyncStorage.getItem(key);
+      const data =  AsyncStorage.getItem(key);
 
       if (data !== null) {
         return data;
@@ -54,6 +67,44 @@ export default function ({ navigation }) {
 
 
 
+async function confirmation()
+{
+ await setErrorMsg(Language['ro'][48]);
+await setTypeError('Error'); 
+setTypeError('None'); 
+
+
+
+
+}
+
+async function deleteAcc()
+{
+  
+  await senddata('delete' ,allData.id,false,false,false,false).then(msg=> {
+    //  console.log(msg.data);
+        // console.log(msg.woocommerce_meta);
+          
+        
+       if(msg.data.deleted===true)
+       {
+        console.log("daa");
+        auth.signOut();
+       }
+        
+          
+                
+           
+          
+          //  auth.signOut();
+           
+          
+  
+          
+  
+        })
+}
+  
   const date = new Date(allData.registered_date);
   const options = { year: "numeric", month: "long", day: "numeric" };
   const formattedDate = date.toLocaleDateString("default", options);
@@ -61,6 +112,7 @@ export default function ({ navigation }) {
 
  // console.log(allData);
   return (
+    
     <Layout  >
    
           <ImageBackground
@@ -69,6 +121,7 @@ export default function ({ navigation }) {
       >
 
 <SafeAreaView style={styles.root}>
+
  <ScrollView
       contentContainerStyle={{
         flexGrow: 1,
@@ -85,8 +138,8 @@ export default function ({ navigation }) {
           }}
           source={require("../../assets/logoapp.png")}
         />
-
-        <Section style={{opacity:0.75,margin:10,}}>
+    
+        <Section style={{opacity:0.90,margin:10,}}>
           <SectionContent style={{backgroundColor:'#000'}}>
             <View
               style={{
@@ -125,10 +178,25 @@ export default function ({ navigation }) {
                 <Col><Text>{formattedDate}</Text></Col>
                 </Row>
               </Grid>
+              <Button
+             color='#fab90b' 
+              text={Language['ro'][47]}
+              onPress={() => {
+                confirmation();
+                 
+              }}
+              style={{
+                marginTop: 20,
+                width:"80%"
+              }}
+             
+            />
             </View>
           </SectionContent>
         </Section>
+        <ModalAlert deleteAcc={deleteAcc} action="sterge" type={typeError} msg={errorMsg}></ModalAlert>
         </ScrollView>
+        
         </SafeAreaView>
         </ImageBackground>
        

@@ -59,7 +59,14 @@ export default function ({ navigation }) {
           marginHorizontal: 20,
         }}
       >
-        <Section style={{opacity: 0.75}}>
+        <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 2 }}>
           <SectionContent style={{  backgroundColor: '#000'}}>
             <Text
               style={{ textAlign: "center", fontSize: 20, paddingBottom: 20 }}

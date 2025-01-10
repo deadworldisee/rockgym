@@ -43,7 +43,7 @@ export default function ({  }) {
 		  >
 
 	
-			<Section style={{opacity:0.75}}>
+			<Section style={{opacity:0.90}}>
 
 
 

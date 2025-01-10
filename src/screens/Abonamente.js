@@ -222,10 +222,14 @@ export default function ({ navigation }) {
         // console.log(allData.woocommerce_meta);
         if (typeof allData.id == "number") {
           const intervalId = setInterval(() => {
+
+            
             getAbo(allData.id).then((data) => {
               let uTimestamp = Math.floor(Date.now() / 1000);
               let increment = 1;
               
+             // console.log(data["aboData"]);
+
               if (listaState == true && data && data["listaAbo"])
                 setListaAbonamente(listaAbo(data["listaAbo"]));
 
@@ -250,8 +254,11 @@ export default function ({ navigation }) {
                     uTimestamp < data["aboData"][key]["_end_date"] &&
                     increment == 1
                   ) {
+                   
+                  const Expira=(new Date(data["aboData"][key]["_end_date"]*1000)).toISOString().slice(0, 10);
+
                     setAboText(
-                      <View>
+                      <View  >
                         <Text
                           style={{
                             textAlign: "center",
@@ -278,6 +285,8 @@ export default function ({ navigation }) {
                             />
                           }
                         ></Button>
+                        <Text style={{textAlign:"center",padding:10}}> {data["aboData"][key]["_title"]} </Text>
+                        <Text style={{textAlign:"center",padding:10}}>{Language['ro'][46]} {Expira}</Text>
                       </View>
                     );
                     increment++;
@@ -342,14 +351,31 @@ export default function ({ navigation }) {
               source={require("../../assets/logoapp.png")}
             />
 
-            <Section style={{ opacity: 0.75, margin: 10 }}>
+            <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 2 }}>
               <SectionContent style={{ backgroundColor: "#000" }}>
                 {aboText}
               </SectionContent>
             </Section>
 
             <Section
-              style={{ opacity: 0.75, margin: 10, alignItems: "center" }}
+              style={{ margin: 10, opacity: 0.95,alignItems:"center", shadowColor: "#fff",
+              shadowOffset: {
+                width: 0,
+                height: 2
+              },
+              shadowOpacity: 0.5,
+              shadowRadius: 2,
+              elevation: 2 }}
+
+
+
             >
               <SectionContent style={{ backgroundColor: "#000" }}>
                 <Text size="h3" style={{ textAlign: "center", margin: 20 }}>

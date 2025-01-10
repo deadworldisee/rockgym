@@ -204,8 +204,15 @@ export default function ({ navigation }) {
             flexGrow: 1,
           }}
         >
-          <Section style={{ margin: 10, opacity: 0.75 }}>
-            <SectionContent style={{ backgroundColor: "#000" }}>
+          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 2 }} >
+            <SectionContent   style={{ backgroundColor: "#000" }}>
               {AboStatus && (
                 <Text size="lg" fontWeight="regular">
                   In prezent sunt {nrClienti} persoane in sala.
@@ -223,16 +230,16 @@ export default function ({ navigation }) {
             </SectionContent>
           </Section>
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.75, shadowColor: "#fff",
+          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
       shadowOffset: {
         width: 0,
         height: 2
       },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5 }}>
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 2 }}  >
             <SectionContent style={{ backgroundColor: "#000" }}>
-              <View>
+              <View >
                 <Video
                   ref={video1}
                   style={{
@@ -269,7 +276,14 @@ export default function ({ navigation }) {
           </Section>
           )} 
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.75 }}>
+          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
+          shadowOffset: {
+            width: 0,
+            height: 2
+          },
+          shadowOpacity: 0.5,
+          shadowRadius: 2,
+          elevation: 2 }}>
             <SectionContent style={{ backgroundColor: "#000" }}>
               <View>
                 <Video
@@ -305,7 +319,14 @@ export default function ({ navigation }) {
             </SectionContent>
           </Section> )}
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.75 }}>
+          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
+          shadowOffset: {
+            width: 0,
+            height: 2
+          },
+          shadowOpacity: 0.5,
+          shadowRadius: 2,
+          elevation: 2 }}>
             <SectionContent style={{ backgroundColor: "#000" }}>
               <View>
                 <Video

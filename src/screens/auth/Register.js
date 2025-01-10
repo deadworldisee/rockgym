@@ -4,7 +4,7 @@ import React, {  useState } from "react";
 
 import Language from "../utils/Language";
 
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
@@ -76,8 +76,44 @@ export default function ({ navigation }) {
               if(msg.status  =='user created')
 
                 {
-                  setLoading(false);
-                  auth.signIn(); 
+
+                   senddata('login' ,username,password,false,false,false).then(msg=> {
+                    //  console.log(msg.data);
+                        // console.log(msg.woocommerce_meta);
+                          if(msg.status  =='error')
+                          {
+                   
+                          setErrorMsg(msg.data);
+                          setTypeError('Error');
+                          setLoading(false);
+                          }
+                
+                          if(msg.status == 'signedIn')
+                          {
+                        
+                       
+                        
+                            const storeData =  (key, value) => {
+                              try {
+                                 AsyncStorage.setItem(key, value);
+                              } catch (error) {
+                                console.log(error);
+                              }
+                            };
+                                
+                            storeData('cont',JSON.stringify(msg.data));
+                            
+                            setLoading(false);
+                            auth.signIn(); 
+                           
+                          }
+                
+                          
+                
+                        })
+
+
+                  
 
                   
                 } 
@@ -138,7 +174,7 @@ export default function ({ navigation }) {
             />
           </View>
           <ModalAlert type={typeError} msg={errorMsg}></ModalAlert>
-          <Section style={{opacity: 0.75,margin:10, shadowColor: "#fff",
+          <Section style={{opacity: 0.90,margin:10, shadowColor: "#fff",
       shadowOffset: {
         width: 0,
         height: 2
