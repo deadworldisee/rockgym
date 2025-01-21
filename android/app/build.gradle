@@ -93,13 +93,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.rockgymiași"
+    namespace 'com.rockgym.rockgym'
     defaultConfig {
-        applicationId "com.rockgymiași"
+        applicationId 'com.rockgym.rockgym'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0.0"
     }
 
     splits {

@@ -21,7 +21,10 @@ import {
 } from "react-native-rapi-ui";
 
 import { Ionicons } from "@expo/vector-icons";
-import { Video } from "expo-av";
+
+// 1. Importăm Video din react-native-video
+import Video from "react-native-video";
+
 import { getAbo, getNrClienti, cameraPlay } from "../wpcurl/wpcurl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -30,107 +33,61 @@ export default function ({ navigation }) {
 
   const timestamp = new Date().getTime();
 
-  const video1 = React.useRef(null);
-  const video2 = React.useRef(null);
-  const video3 = React.useRef(null);
+  // 2. În loc să ținem un status din expo-av, folosim stări booleene pentru a ști dacă un video este playing sau nu
+  const [isPlaying1, setIsPlaying1] = useState(false);
+  const [isPlaying2, setIsPlaying2] = useState(false);
+  const [isPlaying3, setIsPlaying3] = useState(false);
 
+  // 3. Referințe la playeri (dacă vrei să faci .seek sau altceva)
+  const video1 = useRef(null);
+  const video2 = useRef(null);
+  const video3 = useRef(null);
 
+  // 4. URL-urile fișierelor video
+  const [VideoURL1, setVideoURL1] = useState("");
+  const [VideoURL2, setVideoURL2] = useState("");
+  const [VideoURL3, setVideoURL3] = useState("");
 
-  const [status1, setStatus1] = React.useState({});
-  const [status2, setStatus2] = React.useState({});
-  const [status3, setStatus3] = React.useState({});
-
-  const [VideoURL1, setVideoURL1] = React.useState('');
-  const [VideoURL2, setVideoURL2] = React.useState('');
-  const [VideoURL3, setVideoURL3] = React.useState('');
-
-  const [statusButton1, setStatusButton1] = React.useState("Play");
-  const [statusButton2, setStatusButton2] = React.useState("Play");
-  const [statusButton3, setStatusButton3] = React.useState("Play");
+  // 5. Texte butoane
+  const [statusButton1, setStatusButton1] = useState("Play");
+  const [statusButton2, setStatusButton2] = useState("Play");
+  const [statusButton3, setStatusButton3] = useState("Play");
 
   const [AboStatus, setAboStatus] = useState(false);
   const [nrClienti, setNrClienti] = useState(0);
 
-  const viewCamera = async  (camera, statusV, videoV, button ) => {
-     cameraPlay(camera).then((data) => {
+  // 6. Funcția care gestionează logica de „Play/Pause” și setarea URL-ului
+  const viewCamera = async (camera, isPlaying, setIsPlaying, setButtonText, setVideoURL, videoRef) => {
+    cameraPlay(camera).then((data) => {
+      // dacă nu era pe play, pornește-l
+      if (!isPlaying) {
+        let a = 1;
+        const countdown = setInterval(() => {
+          setButtonText(a.toString());
+          if (a === 0) {
+            clearInterval(countdown);
 
+            // Setăm URL în funcție de camera (6, 8, 10)
+            if (camera === 6) {
+              setVideoURL("https://rockgym.ro/auth/camera6/index.m3u8");
+            } else if (camera === 8) {
+              setVideoURL("https://rockgym.ro/auth/camera8/index.m3u8");
+            } else if (camera === 10) {
+              setVideoURL("https://rockgym.ro/auth/camera10/index.m3u8");
+            }
 
-
-
-      if (!statusV.isPlaying)
-      {
-      let a = 1;
-      const countdown = setInterval(() => {
-        switch(button)
-        {
-          case 1:
-            setStatusButton1(a);
-           
-          break;
-          case 2:
-            setStatusButton2(a);
-          break;
-          case 3:
-            setStatusButton3(a);
-          break;
-        }
-        
-        if (a === 0) {
-          clearInterval(countdown);
-          switch(button)
-          {
-            case 1:
-          
-          setVideoURL1('https://rockgym.ro/auth/camera6/index.m3u8');
-              setStatusButton1("Pause");
-           
-          
-            break;
-            case 2:
-             
-                setVideoURL2('https://rockgym.ro/auth/camera8/index.m3u8');
-                setStatusButton2("Pause");
-            
-            break;
-            case 3:
-             
-                setVideoURL3('https://rockgym.ro/auth/camera10/index.m3u8');
-                setStatusButton3("Pause");
-             
-            break;
+            // Setăm starea la "Pause" (adică video-ul este pornit, butonul afișează "Pause")
+            setButtonText("Pause");
+            setIsPlaying(true);
+          } else {
+            a--;
           }
-
-
-
-        
-            videoV.current.playAsync();
-
-          
-        
-          
-        } else {
-          a--;
-        }
-      }, 1000);
-    }
-    else 
-    {
-      videoV.current.pauseAsync();
-      switch(button)
-      {
-        case 1:
-          setStatusButton1("Play");
-         
-        break;
-        case 2:
-          setStatusButton2("Play");
-        break;
-        case 3:
-          setStatusButton3("Play");
-        break;
+        }, 1000);
+      } else {
+        // Video e deja pornit => îl punem pe pauză
+        setIsPlaying(false);
+        setButtonText("Play");
       }
-    }
-
     });
   };
 
@@ -154,24 +111,23 @@ export default function ({ navigation }) {
       if (JSON.parse(data)) {
         let allData = JSON.parse(data);
 
-        // console.log(allData.woocommerce_meta);
         if (typeof allData.id == "number") {
           const intervalId = setInterval(() => {
             getAbo(allData.id).then((data) => {
               let uTimestamp = Math.floor(Date.now() / 1000);
               let increment = 1;
-
-              if (data && data["aboData"])
-              Object.keys(data["aboData"]).forEach((key) => {
-                if (
-                  data["aboData"][key]["_status"] == "active" &&
-                  uTimestamp < data["aboData"][key]["_end_date"] &&
-                  increment == 1
-                ) {
-                  setAboStatus(true);
-                  increment++;
-                }
-              });
+              if (data && data["aboData"]) {
+                Object.keys(data["aboData"]).forEach((key) => {
+                  if (
+                    data["aboData"][key]["_status"] == "active" &&
+                    uTimestamp < data["aboData"][key]["_end_date"] &&
+                    increment == 1
+                  ) {
+                    setAboStatus(true);
+                    increment++;
+                  }
+                });
+              }
             });
           }, 1000);
         }
@@ -204,18 +160,24 @@ export default function ({ navigation }) {
             flexGrow: 1,
           }}
         >
-          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.5,
-      shadowRadius: 2,
-      elevation: 2 }} >
-            <SectionContent   style={{ backgroundColor: "#000" }}>
+          <Section
+            style={{
+              margin: 10,
+              opacity: 0.95,
+              shadowColor: "#fff",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.5,
+              shadowRadius: 2,
+              elevation: 2,
+            }}
+          >
+            <SectionContent style={{ backgroundColor: "#000" }}>
               {AboStatus && (
                 <Text size="lg" fontWeight="regular">
-                  In prezent sunt {nrClienti} persoane in sala.
+                  În prezent sunt {nrClienti} persoane în sală.
                 </Text>
               )}
               {!AboStatus && (
@@ -229,139 +191,170 @@ export default function ({ navigation }) {
               )}
             </SectionContent>
           </Section>
+
+          {/* Video 1 */}
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.5,
-      shadowRadius: 2,
-      elevation: 2 }}  >
-            <SectionContent style={{ backgroundColor: "#000" }}>
-              <View >
-                <Video
-                  ref={video1}
-                  style={{
-                    
-                    height: 250,
-                  }}
-                  source={{
-                    uri: VideoURL1,
-                  }}
-                  useNativeControls
-                  posterSource={{
-                    uri: `http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=6&t=${timestamp}`,
-                  }}
-                  posterStyle={{ height: 250 }}
-                  usePoster={true}
-                  resizeMode="stretch"
-                  isLooping
-                  onPlaybackStatusUpdate={(status1) =>
-                    setStatus1(() => status1)
-                  }
-                />
-                
-              </View>
-              <View style={{ marginTop: 10 }}>
-                <Button
-                  color="#fab90b"
-                  text={statusButton1}
-                  onPress={() => {
-                    viewCamera(6, status1, video1,1);
-                  }}
-                />
-              </View>
-            </SectionContent>
-          </Section>
-          )} 
+            <Section
+              style={{
+                margin: 10,
+                opacity: 0.95,
+                shadowColor: "#fff",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+                elevation: 2,
+              }}
+            >
+              <SectionContent style={{ backgroundColor: "#000" }}>
+                <View>
+                  <Video
+                    ref={video1}
+                    // Dacă isPlaying1 e true, atunci paused={false} => rulare
+                    paused={!isPlaying1}
+                    source={{ uri: VideoURL1 }}
+                    style={{ height: 250 }}
+                    resizeMode="stretch"
+                    // activează controalele native
+                    controls={true}
+                    // loop
+                    repeat={true}
+                    // poster (thumbnail)
+                    poster={`http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=6&t=${timestamp}`}
+                    // setăm ce se întâmplă când pornește/încarcă
+                    onLoadStart={() => {
+                      // de ex. ai putea seta un spinner etc.
+                    }}
+                    onError={(err) => {
+                      console.log("Video1 Error => ", err);
+                    }}
+                  />
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <Button
+                    color="#fab90b"
+                    text={statusButton1}
+                    onPress={() => {
+                      viewCamera(
+                        6,
+                        isPlaying1,
+                        setIsPlaying1,
+                        setStatusButton1,
+                        setVideoURL1,
+                        video1
+                      );
+                    }}
+                  />
+                </View>
+              </SectionContent>
+            </Section>
+          )}
+
+          {/* Video 2 */}
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
-          shadowOffset: {
-            width: 0,
-            height: 2
-          },
-          shadowOpacity: 0.5,
-          shadowRadius: 2,
-          elevation: 2 }}>
-            <SectionContent style={{ backgroundColor: "#000" }}>
-              <View>
-                <Video
-                  ref={video2}
-                  style={{
-                    height: 250,
-                  }}
-                  source={{
-                    uri: VideoURL2,
-                  }}
-                  useNativeControls
-                  posterStyle={{ height: 250 }}
-                  resizeMode="stretch"
-                  posterSource={{
-                    uri: `http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=8&t=${timestamp}`,
-                  }}
-                  usePoster={true}
-                  isLooping
-                  onPlaybackStatusUpdate={(status2) =>
-                    setStatus2(() => status2)
-                  }
-                />
-              </View>
-              <View style={{ marginTop: 10 }}>
-                <Button
-                  color="#fab90b"
-                  text={statusButton2}
-                  onPress={() => {
-                    viewCamera(8, status2, video2,2);
-                  }}
-                />
-              </View>
-            </SectionContent>
-          </Section> )}
+            <Section
+              style={{
+                margin: 10,
+                opacity: 0.95,
+                shadowColor: "#fff",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+                elevation: 2,
+              }}
+            >
+              <SectionContent style={{ backgroundColor: "#000" }}>
+                <View>
+                  <Video
+                    ref={video2}
+                    paused={!isPlaying2}
+                    source={{ uri: VideoURL2 }}
+                    style={{ height: 250 }}
+                    resizeMode="stretch"
+                    controls={true}
+                    repeat={true}
+                    poster={`http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=8&t=${timestamp}`}
+                    onError={(err) => {
+                      console.log("Video2 Error => ", err);
+                    }}
+                  />
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <Button
+                    color="#fab90b"
+                    text={statusButton2}
+                    onPress={() => {
+                      viewCamera(
+                        8,
+                        isPlaying2,
+                        setIsPlaying2,
+                        setStatusButton2,
+                        setVideoURL2,
+                        video2
+                      );
+                    }}
+                  />
+                </View>
+              </SectionContent>
+            </Section>
+          )}
+
+          {/* Video 3 */}
           {AboStatus && (
-          <Section style={{ margin: 10, opacity: 0.95, shadowColor: "#fff",
-          shadowOffset: {
-            width: 0,
-            height: 2
-          },
-          shadowOpacity: 0.5,
-          shadowRadius: 2,
-          elevation: 2 }}>
-            <SectionContent style={{ backgroundColor: "#000" }}>
-              <View>
-                <Video
-                  ref={video3}
-                  style={{
-                    // width: 0.85 * Dimensions.get("window").width,
-                    height: 250,
-                  }}
-                  source={{
-                    uri: VideoURL3,
-                  }}
-                  useNativeControls
-                  posterSource={{
-                    uri: `http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=10&t=${timestamp}`,
-                  }}
-                  usePoster={true}
-                  resizeMode="stretch"
-                  isLooping
-                  onPlaybackStatusUpdate={(status3) =>
-                    setStatus3(() => status3)
-                  }
-                />
-              </View>
-              <View style={{ marginTop: 10 }}>
-                <Button
-                  color="#fab90b"
-                  text={statusButton3}
-                  onPress={() => {
-                    viewCamera(10, status3, video3,3);
-                  }}
-                />
-              </View>
-            </SectionContent>
-          </Section> 
-           )}
+            <Section
+              style={{
+                margin: 10,
+                opacity: 0.95,
+                shadowColor: "#fff",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+                elevation: 2,
+              }}
+            >
+              <SectionContent style={{ backgroundColor: "#000" }}>
+                <View>
+                  <Video
+                    ref={video3}
+                    paused={!isPlaying3}
+                    source={{ uri: VideoURL3 }}
+                    style={{ height: 250 }}
+                    resizeMode="stretch"
+                    controls={true}
+                    repeat={true}
+                    poster={`http://rockgym.ro/auth/getCameraThumb.php?cameraThumb=10&t=${timestamp}`}
+                    onError={(err) => {
+                      console.log("Video3 Error => ", err);
+                    }}
+                  />
+                </View>
+                <View style={{ marginTop: 10 }}>
+                  <Button
+                    color="#fab90b"
+                    text={statusButton3}
+                    onPress={() => {
+                      viewCamera(
+                        10,
+                        isPlaying3,
+                        setIsPlaying3,
+                        setStatusButton3,
+                        setVideoURL3,
+                        video3
+                      );
+                    }}
+                  />
+                </View>
+              </SectionContent>
+            </Section>
+          )}
         </ScrollView>
       </ImageBackground>
     </Layout>
@@ -371,12 +364,10 @@ export default function ({ navigation }) {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-
     alignContent: "center",
   },
   backgroundImage: {
     flex: 1,
-
     resizeMode: "cover",
   },
   container: {

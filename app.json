@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Rock Gym Iași",
-    "slug": "RockGymIasi",
+    "name": "Rock Gym Iasi",
+    "slug": "rockgymiasi",
     "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,7 +12,7 @@
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://rockgym.ro/auth/app"  
+      "url": "https://rockgym.ro/auth/app"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -23,19 +23,19 @@
     "ios": {
       "supportsTablet": true,
       "buildNumber": "2.0.0",
+      "bundleIdentifier": "com.rockgym.rockgym",
       "config": {
         "googleMapsApiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
-      },
-      "bundleIdentifier": "com.rockgym.rockgym"
+      }
     },
     "android": {
-      "versionCode": 2 ,
+      "versionCode": 2,
+      "package": "com.rockgym.rockgym",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
         }
-      },
-      "package": "com.rockgym.rockgym"
+      }
     },
     "extra": {
       "eas": {
@@ -43,8 +43,7 @@
       }
     },
     "runtimeVersion": "2.0.0"
-   
   },
-  "name":"RockGymIași",
-  "displayName":"Rock Gym Iași"
+  "name": "Rock Gym Iasi",
+  "displayName": "Rock Gym Iasi"
 }

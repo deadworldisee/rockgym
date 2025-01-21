@@ -8,12 +8,12 @@ import { LogBox } from "react-native";
 
 
 export default function App() {
-
+  console.log("App component loaded");
   
   const images = [
     require("./assets/icon.png"),
     require("./assets/splash.png"),
-    require("./assets/login.png"),
+    require("./assets/loginPic.png"),
     require("./assets/register.png"),
     require("./assets/forget.png"),
     require("./assets/logoapp.png"),
