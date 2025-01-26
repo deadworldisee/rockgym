@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Rock Gym Iasi",
+    "slug": "rockgymiasi",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/logoapp.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "newArchEnabled": true,
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://rockgym.ro/auth/app"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "web": {
+      "favicon": "./assets/logoapp.png"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "buildNumber": "2.0.0",
+      "bundleIdentifier": "com.rockgym.rockgym",
+      "config": {
+        "googleMapsApiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
+      }
+    },
+    "android": {
+      "versionCode": 2,
+      "package": "com.rockgym.rockgym",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "396cfc5a-9105-4959-a4c3-5e0d41178e72"
+      }
+    },
+    "runtimeVersion": "2.0.0",
+    "plugins": [
+      "expo-asset"
+    ]
+  },
+  "name": "RockGymIasi",
+  "displayName": "Rock Gym Iasi"
+}

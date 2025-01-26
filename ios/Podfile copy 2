@@ -1,0 +1,82 @@
+source 'https://cdn.cocoapods.org/'
+source 'https://github.com/expo/expo.git'
+
+platform :ios, '15.6'
+
+install! 'cocoapods',
+  :deterministic_uuids => false,
+  :disable_input_output_paths => true,
+  :generate_multiple_pod_projects => true
+
+# use_frameworks! :linkage => :static
+
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+prepare_react_native_project!
+
+# use_modular_headers!
+
+target 'RockGymIasi' do
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+  pod 'ExpoModulesCore', :path => '../node_modules/expo-modules-core', :modular_headers => true
+  pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec', :modular_headers => true
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
+  pod 'RCT-Folly', :podspec => '../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec', :modular_headers => true
+  pod 'fmt', :podspec => '../node_modules/react-native/third-party-podspecs/fmt.podspec', :modular_headers => true
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+
+  # Corectare pentru pod-urile lipsă
+  pod 'React-Core', :path => '../node_modules/react-native/'
+  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
+  # pod 'React-RCTAppDelegate', :path => '../node_modules/react-native/' # ✅ Cale corectă
+  pod 'ReactCommon', :path => '../node_modules/react-native/ReactCommon'
+  pod 'EXConstants', :path => '../node_modules/expo-constants/ios'
+  pod 'ExpoAsset', :path => '../node_modules/expo-asset/ios'
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
+  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+
+  use_react_native!(
+    :path => '../node_modules/react-native',
+    :hermes_enabled => false,
+    :fabric_enabled => false,
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(installer, :mac_catalyst_enabled => false)
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+        config.build_settings['LD_RUNPATH_SEARCH_PATHS'] = '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
+      end
+
+      if target.name == 'Yoga'
+        target.build_configurations.each do |config|
+          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        end
+      end
+    end
+  end
+end
