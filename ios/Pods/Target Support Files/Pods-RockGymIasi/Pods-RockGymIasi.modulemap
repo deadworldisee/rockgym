@@ -1,0 +1,6 @@
+module Pods_RockGymIasi {
+  umbrella header "Pods-RockGymIasi-umbrella.h"
+
+  export *
+  module * { export * }
+}

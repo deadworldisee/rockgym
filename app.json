@@ -13,7 +13,7 @@
     "newArchEnabled": true,
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://rockgym.ro/auth/app"
+      "url": "https://u.expo.dev/396cfc5a-9105-4959-a4c3-5e0d41178e72"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -27,7 +27,11 @@
       "bundleIdentifier": "com.rockgym.rockgym",
       "config": {
         "googleMapsApiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need access to your camera to scan QR codes."
       }
+
     },
     "android": {
       "versionCode": 2,
@@ -45,7 +49,17 @@
     },
     "runtimeVersion": "2.0.0",
     "plugins": [
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+     
+        }
+      ]
+      
     ],
     "owner": "petrus.b13"
   },
