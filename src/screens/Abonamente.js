@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   View,
   Image,
@@ -7,6 +8,7 @@ import {
   ScrollView,
   ImageBackground,
   TouchableOpacity,
+  Alert, Linking 
 } from "react-native";
 import Language from "./utils/Language";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -86,13 +88,11 @@ export default function ({ navigation }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
 
-
-
   const handleBarcodeScanned = (() => {
-    let hasProcessed = false; // Flag local pentru a preveni multiple apeluri
+    let hasProcessed = false;
     return (e) => {
       if (!hasProcessed && !scanned && e.data) {
-        hasProcessed = true; // Setăm flag-ul la true pentru a preveni execuții suplimentare
+        hasProcessed = true;
         console.log("Scanned data:", e.data);
 
         if (e.data === "Intra in sala") {
@@ -102,9 +102,6 @@ export default function ({ navigation }) {
       }
     };
   })();
-
-
-
 
   const listaAbo = (lista) => {
     setListaState(false);
@@ -145,21 +142,24 @@ export default function ({ navigation }) {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    let timeoutId = null;
+  
     const fetchDataAndRepeat = async () => {
       try {
         const data = await getData("cont");
-
+  
         if (data && JSON.parse(data)) {
           const allData = JSON.parse(data);
-
+  
           if (typeof allData.id === "number") {
             const data = await getAbo(allData.id);
             const uTimestamp = Math.floor(Date.now() / 1000);
-
+  
             if (listaState && data?.listaAbo) {
               setListaAbonamente(listaAbo(data.listaAbo));
             }
-
+  
             if (data?.status === "asteaptaAccess") {
               setAboText(disabledButton(Language["ro"][39]));
             } else if (data?.status === "parasireSala") {
@@ -171,15 +171,12 @@ export default function ({ navigation }) {
             } else if (data?.aboData) {
               Object.keys(data.aboData).forEach((key) => {
                 const abo = data.aboData[key];
-
-                if (
-                  abo._status === "active" &&
-                  uTimestamp < abo._end_date
-                ) {
+  
+                if (abo._status === "active" && uTimestamp < abo._end_date) {
                   const Expira = new Date(abo._end_date * 1000)
                     .toISOString()
                     .slice(0, 10);
-
+  
                   setAboText(
                     <View>
                       <Text
@@ -212,15 +209,14 @@ export default function ({ navigation }) {
                       <Text style={{ textAlign: "center", padding: 10 }}>
                         {Language["ro"][46]} {Expira}
                       </Text>
-
-                      {/* CameraView */}
+  
                       {permission?.granted && !scanned ? (
                         <CameraView
                           style={{ height: 300, width: 300 }}
                           facing={facing}
                           onBarcodeScanned={handleBarcodeScanned}
                           barCodeScannerSettings={{
-                            barCodeTypes: ['qr'], // Poți adăuga mai multe formate dacă este necesar
+                            barCodeTypes: ['qr'],
                           }}
                         >
                           <View style={styles.buttonContainer}>
@@ -238,28 +234,53 @@ export default function ({ navigation }) {
                         </CameraView>
                       ) : (
                         <Button
-                          onPress={() => {
-                            setScanned(false);
-                          }}
-                          text="Activate Camera"
-                          color={themeColor.primary}
-                        />
+                        onPress={async () => {
+                          // Verifică permisiunea și cere-o dacă nu este acordată
+                          if (!permission?.granted) {
+                            const { granted } = await requestPermission();
+                            if (!granted) {
+                              Alert.alert(
+                                "Permisiune necesară",
+                                "Aplicația are nevoie de acces la cameră",
+                                [
+                                  { text: "Anulează" },
+                                  { 
+                                    text: "Deschide Setări",
+                                    onPress: () => Linking.openSettings() 
+                                  }
+                                ]
+                              );
+                              return;
+                            }
+                          }
+                          setScanned(false);
+                        }}
+                        text="Activate Camera"
+                        color={themeColor.primary}
+                      />
                       )}
                     </View>
                   );
                 }
               });
             }
-
-            setTimeout(fetchDataAndRepeat, 1000);
           }
         }
       } catch (error) {
-        setTimeout(fetchDataAndRepeat, 1000);
+        console.log(error);
+      } finally {
+        if (isMounted) {
+          timeoutId = setTimeout(fetchDataAndRepeat, 1000);
+        }
       }
     };
-
+  
     fetchDataAndRepeat();
+  
+    return () => {
+      isMounted = false;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [listaState, facing, permission]);
 
   const parasireSalaButton = () => {
@@ -327,7 +348,6 @@ export default function ({ navigation }) {
     getData("cont").then((data) => {
       if (JSON.parse(data)) {
         let allData = JSON.parse(data);
-        // console.log(allData.woocommerce_meta);
 
         if (typeof allData.id == "number") {
           setUserData(allData);

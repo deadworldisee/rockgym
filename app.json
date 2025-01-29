@@ -10,10 +10,13 @@
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
+     "jsEngine": "jsc",
     "newArchEnabled": true,
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/396cfc5a-9105-4959-a4c3-5e0d41178e72"
+      "url": "https://u.expo.dev/396cfc5a-9105-4959-a4c3-5e0d41178e72",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -35,7 +38,8 @@
     },
     "android": {
       "versionCode": 2,
-      "package": "com.rockgym.rockgym",
+      "package": "com.rockgym2.rockgym",
+      "permissions": ["CAMERA"],
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyArzQUmPBY2dYMsV8C9bKVjg2WpQIvC-ec"
