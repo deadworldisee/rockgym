@@ -23,7 +23,8 @@ web-build/
 
 # dependencies
 
-
+/android
+/ios
 
 # Expo
 .expo/
@@ -62,3 +63,4 @@ yarn-error.*
 *.tsbuildinfo
 
 # @end expo-cli
+node_modules

@@ -1,62 +1,64 @@
-source 'https://cdn.cocoapods.org/'
-source 'https://github.com/expo/expo.git'
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 
-platform :ios, '15.6'
+require 'json'
+podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
+ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
+
+platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
-  :deterministic_uuids => false,
-  :disable_input_output_paths => true,
-  :generate_multiple_pod_projects => true
-
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/expo/scripts/autolinking'
+  :deterministic_uuids => false
 
 prepare_react_native_project!
 
 target 'RockGymIasi' do
-  # Integrarea modulelor Expo
   use_expo_modules!
-  
-  # Module adiționale
-  pod 'ExpoModulesCore', :path => '../node_modules/expo-modules-core', :modular_headers => true
-  pod 'ExpoAsset', :path => '../node_modules/expo-asset/ios'
-  pod 'EXConstants', :path => '../node_modules/expo-constants/ios'
 
-  # Alte module necesare pentru proiectul React Native
-  pod 'React-jsc', :path => '../node_modules/react-native/ReactCommon/jsc', :modular_headers => true
-  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec', :modular_headers => true
-  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => true
-  pod 'RCT-Folly', :podspec => '../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec', :modular_headers => true
-  pod 'fmt', :podspec => '../node_modules/react-native/third-party-podspecs/fmt.podspec', :modular_headers => true
-  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
+    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
+  else
+    config_command = [
+      'node',
+      '--no-warnings',
+      '--eval',
+      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
+      'react-native-config',
+      '--json',
+      '--platform',
+      'ios'
+    ]
+  end
 
-  # Corectare pentru alte module necesare
-  pod 'React-Core', :path => '../node_modules/react-native/'
-  pod 'React-Core/DevSupport', :path => '../node_modules/react-native/'
-  pod 'ReactCommon', :path => '../node_modules/react-native/ReactCommon'
-  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
-  pod 'RNScreens', :path => '../node_modules/react-native-screens'
-  pod 'react-native-safe-area-context', :path => '../node_modules/react-native-safe-area-context'
+  config = use_native_modules!(config_command)
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
   use_react_native!(
-    :path => '../node_modules/react-native',
-    :hermes_enabled => false,
-    :fabric_enabled => false,
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
   )
 
-  # Post-install pentru a rezolva probleme de compatibilitate
   post_install do |installer|
-    react_native_post_install(installer, :mac_catalyst_enabled => false)
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
-        config.build_settings['LD_RUNPATH_SEARCH_PATHS'] = '$(inherited) @executable_path/Frameworks @loader_path/Frameworks'
-      end
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+    )
 
-      if target.name == 'Yoga'
-        target.build_configurations.each do |config|
-          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    # This is necessary for Xcode 14, because it signs resource bundles by default
+    # when building for devices.
+    installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
     end

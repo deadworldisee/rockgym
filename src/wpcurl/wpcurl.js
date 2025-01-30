@@ -18,7 +18,7 @@ import axios from "axios";
 
                 return new Promise((resolve, reject) => {
 
-                    axios.post('http://rockgym.ro/auth/authentificator.php', {
+                    axios.post('https://rockgym.ro/auth/authentificator.php', {
                     newaccount: 'true',
                     username: username,
                     email: email,
@@ -77,7 +77,7 @@ import axios from "axios";
 
 
                             
-                        axios.post('http://rockgym.ro/auth/authentificator.php', {
+                        axios.post('https://rockgym.ro/auth/authentificator.php', {
                             login: 'true',
                             'username': email,
                             'password': password
@@ -115,14 +115,14 @@ import axios from "axios";
                 case 'requestPass':
                     return new Promise((resolve, reject) => {
                        
-                        axios.post('http://rockgym.ro/auth/authentificator.php', {
+                        axios.post('https://rockgym.ro/auth/authentificator.php', {
                             
                         requestPass: email,
                            
                         },
                          {headers:{"Content-Type" : "application/json"}}
                         ) .then(function (response) {
-
+                            
                            
                             resolve ( response);
 
@@ -137,7 +137,7 @@ import axios from "axios";
                 break;
                 case 'sendReqAccess':
                     return new Promise((resolve, reject) => {
-                        axios.post('http://rockgym.ro/sala.php', {
+                        axios.post('https://rockgym.ro/sala.php', {
                             
                             ReqAccess: email,
                            
@@ -158,7 +158,7 @@ import axios from "axios";
                     })
                     case 'sendReqLeave':
                         return new Promise((resolve, reject) => {
-                            axios.post('http://rockgym.ro/sala.php', {
+                            axios.post('https://rockgym.ro/sala.php', {
                                 
                                 ReqLeave: email,
                                
@@ -180,7 +180,7 @@ import axios from "axios";
                break;
                case 'delete':
                 return new Promise((resolve, reject) => {
-                    axios.post('http://rockgym.ro/auth/authentificator.php', {
+                    axios.post('https://rockgym.ro/auth/authentificator.php', {
                         
                         deleteaccount: true,
                         id:email,
@@ -217,7 +217,7 @@ export function getAbo(iduser)
 
 
                             
-        axios.post('http://rockgym.ro/auth/authentificator.php', {
+        axios.post('https://rockgym.ro/auth/authentificator.php', {
             requestAbo: iduser ,          
         },
          {headers:{"Content-Type" : "application/json"}}
@@ -245,7 +245,7 @@ export function getPoza(iduser)
 
 
                             
-        axios.post('http://rockgym.ro/auth/authentificator.php', {
+        axios.post('https://rockgym.ro/auth/authentificator.php', {
             requestPoza: iduser ,           
         },
          {headers:{"Content-Type" : "application/json"}}
@@ -270,7 +270,7 @@ export function getNrClienti()
 {
     return new Promise((resolve, reject) => {
 
-    axios.post('http://rockgym.ro/auth/authentificator.php', {
+    axios.post('https://rockgym.ro/auth/authentificator.php', {
         requestNrClienti: true ,           
     },
      {headers:{"Content-Type" : "application/json"}}
@@ -292,7 +292,7 @@ export function cameraPlay(camera)
 {
     return new Promise((resolve, reject) => {
 
-    axios.post('http://rockgym.ro/auth/authentificator.php', {
+    axios.post('https://rockgym.ro/auth/authentificator.php', {
         cameraPlay: camera ,           
     },
      {headers:{"Content-Type" : "application/json"}}

@@ -54,7 +54,7 @@ export default function ({ navigation }) {
     setLoading(true);
     await senddata('requestPass' ,email,false,false,false,false).then(response=> {
 
-      
+    
       setLoading(false);
       if(response.data ==true)
           setErrorMsg(Language['ro'][19]);
